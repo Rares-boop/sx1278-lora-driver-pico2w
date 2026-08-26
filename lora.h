@@ -1,6 +1,8 @@
 #ifndef LORA_DRIVER_LIBRARY_H
 #define LORA_DRIVER_LIBRARY_H
 
+#include <stdio.h>
+
 #define LORA_LOG(fmt, ...) printf("[LORA] " fmt "\n", ##__VA_ARGS__)
 
 #define REG_FIFO          0x00
@@ -15,6 +17,7 @@
 #define REG_FIFO_RX_CURRENT 0x10
 #define REG_IRQ_FLAGS     0x12
 #define REG_RX_NB_BYTES     0x13
+#define REG_MODEM_CONFIG_2  0x1E
 #define REG_PAYLOAD_LEN   0x22
 #define REG_VERSION       0x42
 

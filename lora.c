@@ -122,6 +122,9 @@ int lora_init(uint32_t frequency) {
         return -1;
     }
 
+    write_register(REG_MODEM_CONFIG_2, (7 << 4) | 0x04);
+    sleep_ms(10);
+
     write_register(REG_OP_MODE, 0X81);
     sleep_ms(10);
 
@@ -137,6 +140,8 @@ int lora_send(const uint8_t *data, uint8_t len) {
     /* put lora module in standby */
     write_register(REG_OP_MODE, 0X81);
     sleep_ms(10);
+
+    write_register(REG_IRQ_FLAGS, 0xFF);
 
     /* set fifo ptr la baza TX  */
     int set_tx_base = write_register_verified(REG_FIFO_ADDR_PTR, 0x00);
@@ -157,7 +162,7 @@ int lora_send(const uint8_t *data, uint8_t len) {
     write_register(REG_OP_MODE, 0x83);
 
     /* wait for TxDone */
-    int time_to_sleep_ms = 300;
+    int time_to_sleep_ms = 3000;
     uint8_t irq_flags = 0x00;
     while (time_to_sleep_ms > 0) {
         irq_flags = read_register(REG_IRQ_FLAGS);
@@ -170,6 +175,7 @@ int lora_send(const uint8_t *data, uint8_t len) {
 
     if (!(irq_flags & 0x08)) {
         LORA_LOG("lora_send TX timeout");
+        write_register(REG_IRQ_FLAGS, 0xFF);
         write_register(REG_OP_MODE, 0x81);
         return -1;
     }
@@ -193,6 +199,8 @@ int lora_receive(uint8_t *buffer, uint8_t max_len) {
     /* put the lora module in standby */
     write_register(REG_OP_MODE, 0X81);
     sleep_ms(10);
+
+    write_register(REG_IRQ_FLAGS, 0xFF);
 
     /* set FIFO ptr to base RX  */
     int set_rx_base = write_register_verified(REG_FIFO_ADDR_PTR, 0x00);
